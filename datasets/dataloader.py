@@ -99,9 +99,6 @@ class VFDataset(Dataset):
             self.mix2spk_keys = self.mix2spk.keys()
             self.mixed_wav_list = lines_to_dict(hp.dev.input)
 
-        assert (
-            len(self.dvec_list) == len(self.target_wav_list) == len(self.mixed_wav_list)
-        ), "number of training files must match"
         assert len(self.dvec_list) != 0, "no training file found"
 
         self.audio = Audio(hp)
