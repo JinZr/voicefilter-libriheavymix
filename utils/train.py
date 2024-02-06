@@ -51,7 +51,7 @@ def train(
         logger.info("Starting new training run")
 
     try:
-        criterion = nn.MSELoss()
+        criterion = nn.MSELoss(reduction="sum")
         while True:
             validate(audio, model, embedder, testloader, writer, step)
             model.train()
