@@ -52,8 +52,8 @@ def train(
         logger.info("Starting new training run")
 
     try:
-        # criterion = nn.MSELoss()
-        criterion = PowerLaw_Compressed_Loss()
+        criterion = nn.MSELoss()
+        # criterion = PowerLaw_Compressed_Loss()
         while True:
             validate(audio, model, embedder, testloader, writer, step)
             model.train()
