@@ -7,7 +7,7 @@ audio:
   min_level_db: -100.0
   ref_level_db: 20.0
   preemphasis: 0.97
-  power: 0.30
+  power: 1.5
 ---
 model:
   lstm_dim: 400
