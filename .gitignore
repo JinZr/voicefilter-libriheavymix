@@ -2,6 +2,7 @@
 # configuration yaml files
 config/*
 !config/default.yaml
+!config/small.yaml
 
 
 temp/
