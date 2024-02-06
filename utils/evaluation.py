@@ -30,9 +30,9 @@ def validate(audio, model, embedder, testloader, writer, step):
             est_wav = audio.spec2wav(est_mag, mixed_phase)
             est_mask = est_mask[0].cpu().detach().numpy()
 
-            dur = min(np.shape(target_wav)[1], np.shape(est_wav)[1])
+            dur = min(np.shape(target_wav)[0], np.shape(est_wav)[0])
 
-            sdr = bss_eval_sources(target_wav[:, :dur], est_wav[:, :dur], False)[0][0]
+            sdr = bss_eval_sources(target_wav[:dur], est_wav[:dur], False)[0][0]
             writer.log_evaluation(
                 test_loss,
                 sdr,
