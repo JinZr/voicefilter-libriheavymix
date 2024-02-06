@@ -27,7 +27,7 @@ form:
 ---
 dev:
   input: '/star-home/jinzengrui/data/LibriheavyCSS/dev_2spk_kaldi_fmt/mix.scp'
-  enrollments: '/star-home/jinzengrui/data/LibriheavyCSS/dev_2spk_kaldi_fmt/enrollments'
+  enrollments: '/star-home/jinzengrui/data/LibriheavyCSS/dev_2spk_kaldi_fmt/enrollment'
   mix2spk: '/star-home/jinzengrui/data/LibriheavyCSS/dev_2spk_kaldi_fmt/mix2spk'
   spk2src: '/star-home/jinzengrui/data/LibriheavyCSS/dev_2spk_kaldi_fmt/spk2src'
   spk2spk: '/star-home/jinzengrui/data/LibriheavyCSS/dev_2spk_kaldi_fmt/spk2spk'
