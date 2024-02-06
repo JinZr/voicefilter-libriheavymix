@@ -140,7 +140,8 @@ class VFDataset(Dataset):
         else:
             dvec_key = self.enrollments_keys[idx]
             dvec_path, spkid = self.enrollments[dvec_key]
-            dvec_mel = self.audio.get_mel(dvec_path)
+            dvec_wav = librosa.load(dvec_path, sr=self.hp.audio.sample_rate)
+            dvec_mel = self.audio.get_mel(dvec_wav)
             dvec_mel = torch.from_numpy(dvec_mel).float()
 
             target_wav, _ = librosa.load(
