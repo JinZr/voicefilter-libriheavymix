@@ -86,11 +86,18 @@ class VFDataset(Dataset):
         self.train = train
         self.data_dir = hp.data.train_dir if train else hp.data.test_dir
 
-        self.dvec_list = lines_to_dict_spk2src(hp.form.spk2src)
-        self.target_wav_list = lines_to_dict_spk2spk(hp.form.spk2spk)
-        self.mix2spk = lines_to_dict(hp.form.mix2spk)
-        self.mix2spk_keys = self.mix2spk.keys()
-        self.mixed_wav_list = lines_to_dict(hp.form.input)
+        if self.train:
+            self.dvec_list = lines_to_dict_spk2src(hp.form.spk2src)
+            self.target_wav_list = lines_to_dict_spk2spk(hp.form.spk2spk)
+            self.mix2spk = lines_to_dict(hp.form.mix2spk)
+            self.mix2spk_keys = self.mix2spk.keys()
+            self.mixed_wav_list = lines_to_dict(hp.form.input)
+        else:
+            self.dvec_list = lines_to_dict_spk2src(hp.dev.spk2src)
+            self.target_wav_list = lines_to_dict_spk2spk(hp.dev.spk2spk)
+            self.mix2spk = lines_to_dict(hp.dev.mix2spk)
+            self.mix2spk_keys = self.mix2spk.keys()
+            self.mixed_wav_list = lines_to_dict(hp.dev.input)
 
         assert (
             len(self.dvec_list) == len(self.target_wav_list) == len(self.mixed_wav_list)

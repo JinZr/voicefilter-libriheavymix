@@ -25,6 +25,12 @@ form:
   spk2src: '/star-home/jinzengrui/data/LibriheavyCSS/train_small_2spk_kaldi_fmt/spk2src'
   spk2spk: '/star-home/jinzengrui/data/LibriheavyCSS/train_small_2spk_kaldi_fmt/spk2spk'
 ---
+dev:
+  input: '/star-home/jinzengrui/data/LibriheavyCSS/dev_2spk_kaldi_fmt/mix.scp'
+  mix2spk: '/star-home/jinzengrui/data/LibriheavyCSS/dev_2spk_kaldi_fmt/mix2spk'
+  spk2src: '/star-home/jinzengrui/data/LibriheavyCSS/dev_2spk_kaldi_fmt/spk2src'
+  spk2spk: '/star-home/jinzengrui/data/LibriheavyCSS/dev_2spk_kaldi_fmt/spk2spk'
+---
 train:
   batch_size: 8
   num_workers: 16
