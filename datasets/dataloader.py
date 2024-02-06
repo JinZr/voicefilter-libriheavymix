@@ -2,6 +2,7 @@ import random
 from random import choice
 
 import librosa
+import numpy as np
 import torch
 from torch.utils.data import DataLoader, Dataset
 
@@ -129,6 +130,7 @@ class VFDataset(Dataset):
             dvec_path = choice(self.dvec_list[target_spk])
 
             dvec_wav, _ = librosa.load(dvec_path, sr=self.hp.audio.sample_rate)
+            dvec_wav = dvec_wav - np.mean(dvec_wav)
             dvec_mel = self.audio.get_mel(dvec_wav)
             dvec_mel = torch.from_numpy(dvec_mel).float()
 
@@ -168,5 +170,6 @@ class VFDataset(Dataset):
             wav = wav[start : start + dur]
         else:
             wav, _ = librosa.load(path, sr=self.hp.audio.sample_rate)
+        wav = wav - np.mean(wav)
         mag, phase = self.audio.wav2spec(wav)
         return mag, phase
