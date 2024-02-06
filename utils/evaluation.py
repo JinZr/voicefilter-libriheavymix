@@ -1,3 +1,4 @@
+import numpy as np
 import torch
 import torch.nn as nn
 from mir_eval.separation import bss_eval_sources
@@ -29,7 +30,9 @@ def validate(audio, model, embedder, testloader, writer, step):
             est_wav = audio.spec2wav(est_mag, mixed_phase)
             est_mask = est_mask[0].cpu().detach().numpy()
 
-            sdr = bss_eval_sources(target_wav, est_wav, False)[0][0]
+            dur = max(np.shape(target_wav)[1], np.shape(est_wav)[1])
+
+            sdr = bss_eval_sources(target_wav[:, :dur], est_wav[:, :dur], False)[0][0]
             writer.log_evaluation(
                 test_loss,
                 sdr,
