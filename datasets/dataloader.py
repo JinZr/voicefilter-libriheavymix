@@ -82,10 +82,21 @@ class VFDataset(Dataset):
                     res[wavid][spkid] = value
             return res
 
+        def enrollments_to_dict(file_path):
+            res = dict()
+            with open(file_path, "r") as f:
+                lines = f.readlines()
+            for line in lines:
+                key, _, spkid, enroll, index = line.strip().split(",")
+                res[key] = (
+                    spkid,
+                    f"/star-data/rui/libriheavy_ovlp_src_reverb/dev_2spk/{enroll}/{index}.flac",
+                )
+            return res
+
         self.hp = hp
         self.args = args
         self.train = train
-        self.data_dir = hp.data.train_dir if train else hp.data.test_dir
 
         if self.train:
             self.dvec_list = lines_to_dict_spk2src(hp.form.spk2src)
@@ -94,10 +105,10 @@ class VFDataset(Dataset):
             self.mix2spk_keys = list(self.mix2spk.keys())
             self.mixed_wav_list = lines_to_dict(hp.form.input)
         else:
-            self.dvec_list = lines_to_dict_spk2src(hp.dev.spk2src)
+            self.enrollments = enrollments_to_dict(hp.dev.enrollments)
+            self.enrollments_keys = list(self.enrollments.keys())
             self.target_wav_list = lines_to_dict_spk2spk(hp.dev.spk2spk)
             self.mix2spk = lines_to_dict(hp.dev.mix2spk)
-            self.mix2spk_keys = list(self.mix2spk.keys())
             self.mixed_wav_list = lines_to_dict(hp.dev.input)
 
         assert len(self.dvec_list) != 0, "no training file found"
@@ -105,35 +116,43 @@ class VFDataset(Dataset):
         self.audio = Audio(hp)
 
     def __len__(self):
-        return len(self.mix2spk_keys)
+        if self.train:
+            return len(self.mix2spk_keys)
+        else:
+            return len(self.enrollments)
 
     def __getitem__(self, idx):
-
-        mix_key = self.mix2spk_keys[idx]
-        mixed_path = self.mixed_wav_list[mix_key]
-        target_spk = self.mix2spk[mix_key]
-        target_path = self.target_wav_list[mix_key][target_spk]
-        dvec_path = choice(self.dvec_list[target_spk])
-
-        dvec_wav, _ = librosa.load(dvec_path, sr=self.hp.audio.sample_rate)
-        dvec_mel = self.audio.get_mel(dvec_wav)
-        dvec_mel = torch.from_numpy(dvec_mel).float()
-
         if self.train:  # need to be fast
+            mix_key = self.mix2spk_keys[idx]
+            mixed_path = self.mixed_wav_list[mix_key]
+            target_spk = self.mix2spk[mix_key]
+            target_path = self.target_wav_list[mix_key][target_spk]
+            dvec_path = choice(self.dvec_list[target_spk])
+
+            dvec_wav, _ = librosa.load(dvec_path, sr=self.hp.audio.sample_rate)
+            dvec_mel = self.audio.get_mel(dvec_wav)
+            dvec_mel = torch.from_numpy(dvec_mel).float()
+
             target_mag, _ = self.wav2magphase(target_path)
             mixed_mag, _ = self.wav2magphase(mixed_path)
             target_mag = torch.from_numpy(target_mag)
             mixed_mag = torch.from_numpy(mixed_mag)
             return dvec_mel, target_mag, mixed_mag
         else:
+            dvec_key, spkid = self.enrollments_keys[idx]
+            dvec_mel = self.audio.get_mel(self.enrollments[dvec_key])
+            dvec_mel = torch.from_numpy(dvec_mel).float()
+
             target_wav, _ = librosa.load(
-                self.target_wav_list[idx], sr=self.hp.audio.sample_rate
+                self.target_wav_list[dvec_key][spkid],
+                sr=self.hp.audio.sample_rate,
             )
             mixed_wav, _ = librosa.load(
-                self.mixed_wav_list[idx], sr=self.hp.audio.sample_rate
+                self.mixed_wav_list[dvec_key],
+                sr=self.hp.audio.sample_rate,
             )
-            target_mag, _ = self.wav2magphase(self.target_wav_list[idx])
-            mixed_mag, mixed_phase = self.wav2magphase(self.mixed_wav_list[idx])
+            target_mag, _ = self.wav2magphase(self.target_wav_list[dvec_key][spkid])
+            mixed_mag, mixed_phase = self.wav2magphase(self.mixed_wav_list[dvec_key])
             target_mag = torch.from_numpy(target_mag)
             mixed_mag = torch.from_numpy(mixed_mag)
             # mixed_phase = torch.from_numpy(mixed_phase)
