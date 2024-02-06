@@ -5,18 +5,23 @@ import librosa
 import numpy as np
 
 
-class Audio():
+class Audio:
     def __init__(self, hp):
         self.hp = hp
-        self.mel_basis = librosa.filters.mel(sr=hp.audio.sample_rate,
-                                             n_fft=hp.embedder.n_fft,
-                                             n_mels=hp.embedder.num_mels)
+        self.mel_basis = librosa.filters.mel(
+            sr=hp.audio.sample_rate,
+            n_fft=hp.embedder.n_fft,
+            n_mels=hp.embedder.num_mels,
+        )
 
     def get_mel(self, y):
-        y = librosa.core.stft(y=y, n_fft=self.hp.embedder.n_fft,
-                              hop_length=self.hp.audio.hop_length,
-                              win_length=self.hp.audio.win_length,
-                              window='hann')
+        y = librosa.core.stft(
+            y=y,
+            n_fft=self.hp.embedder.n_fft,
+            hop_length=self.hp.audio.hop_length,
+            win_length=self.hp.audio.win_length,
+            window="hann",
+        )
         magnitudes = np.abs(y) ** 2
         mel = np.log10(np.dot(self.mel_basis, magnitudes) + 1e-6)
         return mel
@@ -25,7 +30,7 @@ class Audio():
         D = self.stft(y)
         S = self.amp_to_db(np.abs(D)) - self.hp.audio.ref_level_db
         S, D = self.normalize(S), np.angle(D)
-        S, D = S.T, D.T # to make [time, freq]
+        S, D = S.T, D.T  # to make [time, freq]
         return S, D
 
     def spec2wav(self, spectrogram, phase):
@@ -37,15 +42,20 @@ class Audio():
         return self.istft(S, phase)
 
     def stft(self, y):
-        return librosa.stft(y=y, n_fft=self.hp.audio.n_fft,
-                            hop_length=self.hp.audio.hop_length,
-                            win_length=self.hp.audio.win_length)
+        return librosa.stft(
+            y=y,
+            n_fft=self.hp.audio.n_fft,
+            hop_length=self.hp.audio.hop_length,
+            win_length=self.hp.audio.win_length,
+        )
 
     def istft(self, mag, phase):
-        stft_matrix = mag * np.exp(1j*phase)
-        return librosa.istft(stft_matrix,
-                             hop_length=self.hp.audio.hop_length,
-                             win_length=self.hp.audio.win_length)
+        stft_matrix = mag * np.exp(1j * phase)
+        return librosa.istft(
+            stft_matrix,
+            hop_length=self.hp.audio.hop_length,
+            win_length=self.hp.audio.win_length,
+        )
 
     def amp_to_db(self, x):
         return 20.0 * np.log10(np.maximum(1e-5, x))

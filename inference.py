@@ -1,19 +1,20 @@
-import os
-import glob
-import torch
-import librosa
 import argparse
+import glob
+import os
 
+import librosa
+import torch
+
+from model.embedder import SpeechEmbedder
+from model.model import VoiceFilter
 from utils.audio import Audio
 from utils.hparams import HParam
-from model.model import VoiceFilter
-from model.embedder import SpeechEmbedder
 
 
 def main(args, hp):
     with torch.no_grad():
         model = VoiceFilter(hp).cuda()
-        chkpt_model = torch.load(args.checkpoint_path)['model']
+        chkpt_model = torch.load(args.checkpoint_path)["model"]
         model.load_state_dict(chkpt_model)
         model.eval()
 
@@ -41,24 +42,38 @@ def main(args, hp):
         est_wav = audio.spec2wav(est_mag, phase)
 
         os.makedirs(args.out_dir, exist_ok=True)
-        out_path = os.path.join(args.out_dir, 'result.wav')
+        out_path = os.path.join(args.out_dir, "result.wav")
         librosa.output.write_wav(out_path, est_wav, sr=16000)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-c', '--config', type=str, required=True,
-                        help="yaml file for configuration")
-    parser.add_argument('-e', '--embedder_path', type=str, required=True,
-                        help="path of embedder model pt file")
-    parser.add_argument('--checkpoint_path', type=str, default=None,
-                        help="path of checkpoint pt file")
-    parser.add_argument('-m', '--mixed_file', type=str, required=True,
-                        help='path of mixed wav file')
-    parser.add_argument('-r', '--reference_file', type=str, required=True,
-                        help='path of reference wav file')
-    parser.add_argument('-o', '--out_dir', type=str, required=True,
-                        help='directory of output')
+    parser.add_argument(
+        "-c", "--config", type=str, required=True, help="yaml file for configuration"
+    )
+    parser.add_argument(
+        "-e",
+        "--embedder_path",
+        type=str,
+        required=True,
+        help="path of embedder model pt file",
+    )
+    parser.add_argument(
+        "--checkpoint_path", type=str, default=None, help="path of checkpoint pt file"
+    )
+    parser.add_argument(
+        "-m", "--mixed_file", type=str, required=True, help="path of mixed wav file"
+    )
+    parser.add_argument(
+        "-r",
+        "--reference_file",
+        type=str,
+        required=True,
+        help="path of reference wav file",
+    )
+    parser.add_argument(
+        "-o", "--out_dir", type=str, required=True, help="directory of output"
+    )
 
     args = parser.parse_args()
 

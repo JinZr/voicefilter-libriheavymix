@@ -59,6 +59,7 @@ if __name__ == "__main__":
         ],
     )
     logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
 
     writer = MyWriter(hp, log_dir)
 
