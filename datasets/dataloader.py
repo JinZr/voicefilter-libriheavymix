@@ -90,13 +90,13 @@ class VFDataset(Dataset):
             self.dvec_list = lines_to_dict_spk2src(hp.form.spk2src)
             self.target_wav_list = lines_to_dict_spk2spk(hp.form.spk2spk)
             self.mix2spk = lines_to_dict(hp.form.mix2spk)
-            self.mix2spk_keys = self.mix2spk.keys()
+            self.mix2spk_keys = list(self.mix2spk.keys())
             self.mixed_wav_list = lines_to_dict(hp.form.input)
         else:
             self.dvec_list = lines_to_dict_spk2src(hp.dev.spk2src)
             self.target_wav_list = lines_to_dict_spk2spk(hp.dev.spk2spk)
             self.mix2spk = lines_to_dict(hp.dev.mix2spk)
-            self.mix2spk_keys = self.mix2spk.keys()
+            self.mix2spk_keys = list(self.mix2spk.keys())
             self.mixed_wav_list = lines_to_dict(hp.dev.input)
 
         assert len(self.dvec_list) != 0, "no training file found"
