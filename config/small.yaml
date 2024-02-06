@@ -33,7 +33,7 @@ dev:
   spk2spk: '/star-home/jinzengrui/data/LibriheavyCSS/dev_2spk_kaldi_fmt/spk2spk'
 ---
 train:
-  batch_size: 32
+  batch_size: 36
   num_workers: 16
   optimizer: 'adam'
   adam: 0.001
