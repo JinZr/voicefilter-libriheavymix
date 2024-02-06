@@ -141,12 +141,11 @@ class VFDataset(Dataset):
 
     def wav2magphase(self, path):
         if self.train:
-            wav, _ = librosa.load(
-                path,
-                sr=self.hp.audio.sample_rate,
-                offset=random.randint(0, 5),
-                duration=3,
-            )
+            wav, _ = librosa.load(path, sr=self.hp.audio.sample_rate)
+            wav_dur = len(wav)
+            dur = 3 * self.hp.audio.sample_rate
+            start = random.randint(0, max(0, wav_dur - dur))
+            wav = wav[start : start + dur]
         else:
             wav, _ = librosa.load(path, sr=self.hp.audio.sample_rate)
         mag, phase = self.audio.wav2spec(wav)
