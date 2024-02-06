@@ -121,6 +121,8 @@ class VFDataset(Dataset):
         if self.train:  # need to be fast
             target_mag, _ = self.wav2magphase(target_path)
             mixed_mag, _ = self.wav2magphase(mixed_path)
+            target_mag = torch.from_numpy(target_mag)
+            mixed_mag = torch.from_numpy(mixed_mag)
             return dvec_mel, target_mag, mixed_mag
         else:
             target_wav, _ = librosa.load(
