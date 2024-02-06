@@ -11,7 +11,7 @@ from utils.audio import Audio
 from utils.hparams import HParam
 
 
-def main(args, hp, enrollments_dict):
+def main(args, hp, mixscp, enrollments_dict):
     with torch.no_grad():
         model = VoiceFilter(hp).cuda()
         chkpt_model = torch.load(args.checkpoint_path)["model"]
@@ -33,7 +33,7 @@ def main(args, hp, enrollments_dict):
             dvec = embedder(dvec_mel)
             dvec = dvec.unsqueeze(0)
 
-            mixed_wav, _ = librosa.load(args.mixed_file, sr=8000)
+            mixed_wav, _ = librosa.load(mix_dict[key], sr=8000)
             mag, phase = audio.wav2spec(mixed_wav)
             mag = torch.from_numpy(mag).float().cuda()
 
@@ -61,6 +61,16 @@ def enrollments_to_dict(file_path):
     return res
 
 
+def lines_to_dict(file_path):
+    res = dict()
+    with open(file_path, "r") as f:
+        lines = f.readlines()
+    for line in lines:
+        key, value = line.strip().split()
+        res[key] = value
+    return res
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -85,8 +95,10 @@ if __name__ == "__main__":
     enrollments = (
         "/star-home/jinzengrui/data/LibriheavyCSS/dev_2spk_kaldi_fmt/enrollment"
     )
+    mixscp = "/star-home/jinzengrui/data/LibriheavyCSS/dev_2spk_kaldi_fmt/mix.scp"
     enrollments_dict = enrollments_to_dict(enrollments)
+    mix_dict = lines_to_dict(mixscp)
 
     hp = HParam(args.config)
 
-    main(args, hp, enrollments_dict)
+    main(args, hp, mixscp, enrollments_dict)
