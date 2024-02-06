@@ -1,3 +1,4 @@
+import random
 from random import choice
 
 import librosa
@@ -139,6 +140,14 @@ class VFDataset(Dataset):
             return dvec_mel, target_wav, mixed_wav, target_mag, mixed_mag, mixed_phase
 
     def wav2magphase(self, path):
-        wav, _ = librosa.load(path, sr=self.hp.audio.sample_rate)
+        if self.train:
+            wav, _ = librosa.load(
+                path,
+                sr=self.hp.audio.sample_rate,
+                offset=random.randint(0, 5),
+                duration=3,
+            )
+        else:
+            wav, _ = librosa.load(path, sr=self.hp.audio.sample_rate)
         mag, phase = self.audio.wav2spec(wav)
         return mag, phase
