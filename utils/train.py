@@ -20,7 +20,7 @@ def train(
     embedder_pt = torch.load(args.embedder_path)
     embedder = SpeechEmbedder(hp).cuda()
     embedder.load_state_dict(embedder_pt)
-    embedder.eval()
+    # embedder.eval()
 
     audio = Audio(hp)
     model = VoiceFilter(hp).cuda()
@@ -51,7 +51,7 @@ def train(
         logger.info("Starting new training run")
 
     try:
-        criterion = nn.MSELoss(reduction="sum")
+        criterion = nn.MSELoss()
         while True:
             validate(audio, model, embedder, testloader, writer, step)
             model.train()
