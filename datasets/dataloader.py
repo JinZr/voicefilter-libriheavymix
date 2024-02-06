@@ -139,8 +139,8 @@ class VFDataset(Dataset):
             return dvec_mel, target_mag, mixed_mag
         else:
             dvec_key = self.enrollments_keys[idx]
-            dvec_path, spkid = self.enrollments[dvec_key]
-            dvec_wav = librosa.load(dvec_path, sr=self.hp.audio.sample_rate)
+            spkid, dvec_path = self.enrollments[dvec_key]
+            dvec_wav, _ = librosa.load(dvec_path, sr=self.hp.audio.sample_rate)
             dvec_mel = self.audio.get_mel(dvec_wav)
             dvec_mel = torch.from_numpy(dvec_mel).float()
 
