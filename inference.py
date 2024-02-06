@@ -28,27 +28,27 @@ def main(args, hp, mixscp, enrollments_dict):
         os.makedirs(args.out_dir, exist_ok=True)
 
         for key, item in tqdm(enrollments_dict.items()):
-            spkid, enroll_path = item
-            dvec_wav, _ = librosa.load(enroll_path, sr=8000)
-            dvec_mel = audio.get_mel(dvec_wav)
-            dvec_mel = torch.from_numpy(dvec_mel).float().cuda()
-            dvec = embedder(dvec_mel)
-            dvec = dvec.unsqueeze(0)
+            for spkid, enroll_path in item:
+                dvec_wav, _ = librosa.load(enroll_path, sr=8000)
+                dvec_mel = audio.get_mel(dvec_wav)
+                dvec_mel = torch.from_numpy(dvec_mel).float().cuda()
+                dvec = embedder(dvec_mel)
+                dvec = dvec.unsqueeze(0)
 
-            mixed_wav, _ = librosa.load(mix_dict[key], sr=8000)
-            mag, phase = audio.wav2spec(mixed_wav)
-            mag = torch.from_numpy(mag).float().cuda()
+                mixed_wav, _ = librosa.load(mix_dict[key], sr=8000)
+                mag, phase = audio.wav2spec(mixed_wav)
+                mag = torch.from_numpy(mag).float().cuda()
 
-            mag = mag.unsqueeze(0)
-            mask = model(mag, dvec)
-            est_mag = mag * mask
+                mag = mag.unsqueeze(0)
+                mask = model(mag, dvec)
+                est_mag = mag * mask
 
-            est_mag = est_mag[0].cpu().detach().numpy()
-            est_wav = audio.spec2wav(est_mag, phase)
+                est_mag = est_mag[0].cpu().detach().numpy()
+                est_wav = audio.spec2wav(est_mag, phase)
 
-            out_path = os.path.join(args.out_dir, f"{key}_{spkid}.wav")
+                out_path = os.path.join(args.out_dir, f"{key}_{spkid}.wav")
 
-            sf.write(out_path, est_wav, samplerate=8000)
+                sf.write(out_path, est_wav, samplerate=8000)
 
 
 def enrollments_to_dict(file_path):
