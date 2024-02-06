@@ -73,7 +73,7 @@ class VFDataset(Dataset):
                 lines = f.readlines()
             for line in lines:
                 key, value = line.strip().split()
-                wavid, spkid = key.split("_")
+                wavid, spkid = key.split("+")
                 if wavid not in res:
                     res[wavid] = dict()
                     res[wavid][spkid] = value
